@@ -1,0 +1,214 @@
+openapi: "3.0.0"
+info:
+  title: "Auction API"
+  description: "API for auction system"
+  version: "1.0.0"
+paths:
+  /reg:
+    post:
+      summary: "Register"
+      description: "Register a new user"
+      tags:
+        - "User"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserData"
+      responses:
+        "200":
+          description: "JWT token"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JWT"
+        "400":
+          description: "Invalid input"
+        "500":
+          description: "Internal server error"
+  /login:
+    post:
+      summary: "Login"
+      description: "User login"
+      tags:
+        - "User"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserData"
+      responses:
+        "200":
+          description: "JWT token"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JWT"
+        "400":
+          description: "Invalid input"
+        "500":
+          description: "Internal server error"
+  /lot:
+    post:
+      summary: "Create Lot"
+      description: "Create a new lot"
+      tags:
+        - "Auction"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Lot"
+      responses:
+        "200":
+          description: "ID of the created lot"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ID"
+        "400":
+          description: "Invalid input"
+        "500":
+          description: "Internal server error"
+  /start:
+    post:
+      summary: "Start Auction"
+      description: "Start a new auction"
+      tags:
+        - "Auction"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Auction"
+      responses:
+        "200":
+          description: "ID of the created auction"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ID"
+        "400":
+          description: "Invalid input"
+        "500":
+          description: "Internal server error"
+  /bid:
+    post:
+      summary: "Place Bid"
+      description: "Place a bid"
+      tags:
+        - "Bid"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Bid"
+      responses:
+        "200":
+          description: "ID of the placed bid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ID"
+        "400":
+          description: "Invalid input"
+        "500":
+          description: "Internal server error"
+  /pay:
+    get:
+      summary: "Pay"
+      description: "Make a payment"
+      tags:
+        - "Payment"
+      responses:
+        "200":
+          description: "Empty response"
+        "400":
+          description: "Invalid input"
+        "500":
+          description: "Internal server error"
+
+components:
+  schemas:
+    UserData:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+          description: "Email пользователя"
+        password:
+          type: "string"
+          description: "Пароль пользователя"
+      required:
+        - email
+        - password
+    JWT:
+      type: "object"
+      properties:
+        token:
+          type: "string"
+          description: "JWT токен"
+      required:
+        - token
+    Lot:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          description: "Название лота"
+        description:
+          type: "string"
+          description: "Описание лота"
+        minPrice:
+          type: "number"
+          format: "double"
+          description: "Минимальная цена лота"
+      required:
+        - name
+        - minPrice
+    ID:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+          description: "Идентификатор"
+      required:
+        - id
+    Auction:
+      type: "object"
+      properties:
+        lot:
+          type: "integer"
+          format: "int32"
+          description: "Идентификатор лота"
+        minStep:
+          type: "integer"
+          format: "int32"
+          description: "Минимальный шаг ставок"
+        expires:
+          type: "string"
+          description: "Дата окончания аукциона (ДД.ММ.ГГГГ.ЧЧ.ММ)"
+      required:
+        - lot
+        - minStep
+        - expires
+    Bid:
+      type: "object"
+      properties:
+        auction:
+          type: "integer"
+          format: "int32"
+          description: "Идентификатор аукциона"
+        bid:
+          type: "integer"
+          format: "int32"
+          description: "Ставка"
+      required:
+        - auction
+        - bid
