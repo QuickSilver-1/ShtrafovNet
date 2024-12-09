@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  app:
+    image: app:latest
+    container_name: app
+    build: ./Dockerfile
+    ports:
+      - "8080:8080"
+      - "5047:5047"
+    restart: always
+    env_file:
+      - cmd/ShtrafovNet/config.env
+    depends_on:
+      - "postgres"
+    networks:
+      - app
+
+  postgres:
+    container_name: postgres
+    image:
+      postgres:15.2-alpine
+    environment:
+      POSTGRES_DB: "shtrav"
+      POSTGRES_USER: "roman"
+      POSTGRES_PASSWORD: "030905romaN"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - .:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - cmd/ShtrafovNet/config.env
+    networks:
+      - app
+
+volumes:
+  db-data:
+
+networks:
+  postgres:
+    driver: bridge
+  app:
+    driver: bridge
+    

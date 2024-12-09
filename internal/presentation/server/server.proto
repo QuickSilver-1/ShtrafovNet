@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+import "gateway/annotations.proto";
+option go_package = "github.com/QuickSilver-1/ShtrafovNet;server";
+
+package server;
+
+// Данные для аунтификации
+message UserData {
+    string email = 1;    // Email пользователя
+    string password = 2; // Пароль пользователя
+}
+
+// JWT токен
+message JWT {
+    string token = 1; // Токен
+}
+
+// Данные лота
+message Lot {
+    string name = 1;        // Название лота
+    string description = 2; // Описание лота
+    double minPrice = 3;    // Минимальная цена лота
+}
+
+message ID {
+    int32 id = 1;
+}
+
+// Данные аукциона
+message Auction {
+    int32 lot = 1;         // Идентификатор аукциона
+    int32 minStep = 2;     // Минимальный шаг ставок
+    string expires = 3;    // Дата окончания аукциона (ДД.ММ.ГГГГ.ЧЧ.ММ)
+}
+
+// Данные ставки
+message Bid {
+    int32 auction = 1; // Идентификатор ставки
+    int32 bid = 2;     // Ставка
+}
+
+message Email {
+    string email = 1;
+}
+
+message Empty {}
+
+message Money {
+    double money = 1;
+}
+
+// Сервис для управления аукционами
+service AuctionService {
+    // Метод для регистрации пользователя
+    rpc Register (UserData) returns (JWT) {
+        option (google.api.http) = {
+            post: "/reg"
+            body: "*"
+        };
+    }
+
+    // Метод для входа пользователя
+    rpc Login (UserData) returns (JWT) {
+        option (google.api.http) = {
+            post: "/login"
+            body: "*"
+        };
+    }
+
+    // Метод для создания лота
+    rpc CreateLot (Lot) returns (ID) {
+        option (google.api.http) = {
+            post: "/lot"
+            body: "*"
+        };
+    }
+
+    // Метод для начала аукциона
+    rpc StartAuction (Auction) returns (ID) {
+        option (google.api.http) = {
+            post: "/start"
+            body: "*"
+        };
+    }
+
+    // Метод для размещения ставки
+    rpc PlaceBid (Bid) returns (ID) {
+        option (google.api.http) = {
+            post: "/bid"
+            body: "*"
+        };
+    }
+
+    // Метод для оплаты
+    rpc Pay (Money) returns (Empty) {
+        option (google.api.http) = {
+            get: "/pay"
+        };
+    }
+}
