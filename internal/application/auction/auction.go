@@ -10,16 +10,20 @@ import (
 	psql "auction/internal/infrastructure/repository/postgres"
 )
 
+var(
+    auctionDb = psql.NewAuctionDb(logger.Log)
+    bidDb = psql.NewBidDb(logger.Log)
+    budService = service.NewBidService(db.DB, bidDb)
+    lotDb = psql.NewLotDb(logger.Log)
+    not = collectNotificator()
+    auctionService = service.NewAuctionService(db.DB, auctionDb, not, lotDb)
+)
+
 type AuctionRepo struct{}
 
 func NewAuctionRepo() *AuctionRepo { return &AuctionRepo{} }
 
 func (a *AuctionRepo) CreateLot(lot entity.Lot) (int, error) {
-    auctionDb := psql.NewAuctionDb(logger.Log)
-    lotDb := psql.NewLotDb(logger.Log)
-    not := collectNotificator()
-    auctionService := service.NewAuctionService(db.DB, auctionDb, not, lotDb)
-
     id, err := auctionService.CreateLot(lot)
 
     if err != nil {
@@ -30,11 +34,6 @@ func (a *AuctionRepo) CreateLot(lot entity.Lot) (int, error) {
 }
 
 func (h *AuctionRepo) StartAuction(auction entity.Auction) (int, error) {
-    auctionDb := psql.NewAuctionDb(logger.Log)
-    lotDb := psql.NewLotDb(logger.Log)
-    not := collectNotificator()
-    auctionService := service.NewAuctionService(db.DB, auctionDb, not, lotDb)
-
     id, err := auctionService.StartAuction(auction)
     
     if err != nil {
@@ -45,11 +44,6 @@ func (h *AuctionRepo) StartAuction(auction entity.Auction) (int, error) {
 }
 
 func (h *AuctionRepo) FinishAuction(auction entity.Auction) (string, error) {
-    auctionDb := psql.NewAuctionDb(logger.Log)
-    lotDb := psql.NewLotDb(logger.Log)
-    not := collectNotificator()
-    auctionService := service.NewAuctionService(db.DB, auctionDb, not, lotDb)
-
     winner, err := auctionService.FindWinner(auction)
 
     if err != nil {
@@ -60,9 +54,6 @@ func (h *AuctionRepo) FinishAuction(auction entity.Auction) (string, error) {
 }
 
 func (h *AuctionRepo) PlaceBid(bid entity.Bid) (int, error) {
-    bidDb := psql.NewBidDb(logger.Log)
-    budService := service.NewBidService(db.DB, bidDb)
-    
     id, err := budService.PlaceBid(bid)
 
     if err != nil {
